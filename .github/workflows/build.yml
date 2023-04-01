@@ -1,0 +1,16 @@
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Build
+        run: |
+          sudo apt-get update
+          sudo apt-get install debootstrap
+
+          sudo debootstrap --variant=minbase xenial crossing
+          sudo chroot crossing
+          
+          echo "Hello!"
+          exit
