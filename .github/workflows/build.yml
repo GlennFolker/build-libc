@@ -10,7 +10,5 @@ jobs:
           sudo apt-get install debootstrap
 
           sudo debootstrap --variant=minbase xenial crossing
-          sudo chroot crossing
-          
-          echo "Hello!"
-          exit
+          sudo chroot crossing /bin/bash -c \
+              echo "Hello!"
