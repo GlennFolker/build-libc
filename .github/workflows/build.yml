@@ -20,7 +20,7 @@ jobs:
           sudo apt-get update
           sudo apt-get -y install debootstrap
 
-          sudo debootstrap --variant=minbase xenial chroot-root
+          sudo debootstrap --variant=minbase xenial /chroot-root
           sudo chroot /chroot-root /bin/bash -c "$(printf "\
           apt-get update &&\
           apt-get install -y \
