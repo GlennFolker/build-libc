@@ -21,8 +21,7 @@ jobs:
           apt-get update &&\
           apt-get install -y \
             apt-transport-https ca-certificates \
-            wget \
-            software-properties-common &&\
+            wget software-properties-common &&\
           \
           wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | apt-key add - &&\
           apt-add-repository \"deb http://apt.llvm.org/xenial/ llvm-toolchain-xenial-12 main\" &&\
@@ -35,3 +34,5 @@ jobs:
             libc6-dev libc6-dev-i386 \
             libc6-dev-arm64-cross libc6-dev-armhf-cross \
           ")"
+
+          sudo chown -R $(whoami):$(id -ng) chroot-root
