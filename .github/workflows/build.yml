@@ -54,7 +54,7 @@ jobs:
           clang-12 crossing.c -o crossing-armv7-linux -fuse-ld=lld -target armv7-linux-gnueabihf -O3 \
           ")"
 
-          sudo mv /chroot-root/crossing/crossing-{x86_64,i686,aarch64,armv7}-linux .
+          sudo mv /chroot-root/crossing/crossing-{x86_64,x86_32,aarch64,armv7}-linux .
           sudo rm -rf /chroot-root/crossing
       - name: Upload cross-compiled C program
         uses: actions/upload-artifact@v3
