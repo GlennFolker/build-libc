@@ -34,9 +34,9 @@ jobs:
           apt-get install -y \
             clang-12 lld-12 \
             libgcc-5-dev lib32gcc-5-dev \
-            libgcc-5-dev-arm64-cross libgcc-5-dev-armhf-cross \
+            libgcc-5-dev-arm64-cross libgcc-5-dev-armel-cross libgcc-5-dev-armhf-cross \
             libc6-dev libc6-dev-i386 \
-            libc6-dev-arm64-cross libc6-dev-armhf-cross \
+            libc6-dev-arm64-cross libc6-dev-armel-cross libc6-dev-armhf-cross \
           ")"
       - name: Cross-compile test C source code
         run: |
@@ -51,7 +51,8 @@ jobs:
           clang-12 crossing.c -o crossing-x86_64 -fuse-ld=lld -target x86_64-linux-gnu &&\
           clang-12 crossing.c -o crossing-i386 -fuse-ld=lld -target i386-linux-gnu &&\
           clang-12 crossing.c -o crossing-aarch64 -fuse-ld=lld -target aarch64-linux-gnu &&\
-          clang-12 crossing.c -o crossing-armv7 -fuse-ld=lld -target armv7-linux-gnueabihf \
+          clang-12 crossing.c -o crossing-armv7el -fuse-ld=lld -target armv7-linux-gnueabi &&\
+          clang-12 crossing.c -o crossing-armv7hf -fuse-ld=lld -target armv7-linux-gnueabihf \
           ")"
 
           sudo mv /chroot-root/crossing/crossing-{x86_64,i386,aarch64,armv7} .
