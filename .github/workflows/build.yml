@@ -11,7 +11,7 @@ jobs:
 
           sudo debootstrap --variant=minbase xenial crossing
           sudo chroot crossing /bin/bash -c "$(printf "\
-          apt-get update \n\
+          apt-get update && apt-get install wget \n\
           apt-get install \ \n\
             wget \ \n\
             software-properties-common \n\
