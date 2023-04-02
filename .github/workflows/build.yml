@@ -34,5 +34,4 @@ jobs:
             libgcc-5-dev-arm64-cross libgcc-5-dev-armhf-cross \
             libc6-dev libc6-dev-i386 \
             libc6-dev-arm64-cross libc6-dev-armhf-cross \
-          \
           ")"
