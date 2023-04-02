@@ -7,12 +7,12 @@ jobs:
       - name: Build
         run: |
           sudo apt-get update
-          sudo apt-get install debootstrap
+          sudo apt-get -y install debootstrap
 
           sudo debootstrap --variant=minbase xenial crossing
           sudo chroot crossing /bin/bash -c "$(printf "\
           apt-get update &&\
-          apt-get install \
+          apt-get install -y \
             wget \
             software-properties-common &&\
           \
