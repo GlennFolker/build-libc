@@ -36,3 +36,31 @@ jobs:
           ")"
 
           sudo chown -R $(whoami):$(id -ng) chroot-root
+      - name: Cross-compile test C source code
+        run: |
+          sudo chroot chroot-root /bin/bash -c "$(printf "\
+          printf "\
+          #include <stdio.h> \n\
+          \n\
+          int main(void) { \n\
+              printf(\"Hello, world!\\\n\"); \n\
+              return 0; \n\
+          } \n\
+          " > crossing.c &&\
+          \
+          clang-12 crossing.c -o crossing-x86_64 -fuse-ld=lld -target x86_64-linux-gnu &&\
+          clang-12 crossing.c -o crossing-i386 -fuse-ld=lld -target i386-linux-gnu &&\
+          clang-12 crossing.c -o crossing-aarch64 -fuse-ld=lld -target aarch64-linux-gnu &&\
+          clang-12 crossing.c -o crossing-armv7 -fuse-ld=lld -target armv7-linux-gnueabihf &&\
+          ")"
+
+          sudo cp chroot-root/crossing-{x86_64,i386,aarch64,armv7} .
+      - name: Upload cross-compiled C program
+        uses: actions/upload-artifact@v3
+        with:
+          name: crossing
+          path: |
+            crossing-x86_64
+            crossing-i386
+            crossing-aarch64
+            crossing-armv7
