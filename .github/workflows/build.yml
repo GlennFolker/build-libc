@@ -1,7 +1,7 @@
 on: [push]
 
 jobs:
-  build:
+  build-linux:
     runs-on: ubuntu-latest
     steps:
       - name: Clone repository
@@ -11,7 +11,7 @@ jobs:
         uses: john-shaffer/cache@main
         with:
           path: /chroot-root
-          key: ${{ runner.os }}-chroot-root-v1
+          key: ${{ runner.os }}-chroot-root-v0
       - name: Bootstrap the `chroot` environment
         if: steps.cache-chroot.outputs.cache-hit != 'true'
         run: |
@@ -48,20 +48,39 @@ jobs:
           sudo chroot /chroot-root /bin/bash -c "$(printf "\
           cd crossing &&\
           \
-          clang-12 crossing.c -o crossing-x86_64 -fuse-ld=lld -target x86_64-linux-gnu &&\
-          clang-12 crossing.c -o crossing-i386 -fuse-ld=lld -target i386-linux-gnu &&\
-          clang-12 crossing.c -o crossing-aarch64 -fuse-ld=lld -target aarch64-linux-gnu &&\
-          clang-12 crossing.c -o crossing-armv7 -fuse-ld=lld -target armv7-linux-gnueabihf \
+          clang-12 crossing.c -o crossing-x86_64-linux -fuse-ld=lld -target x86_64-linux-gnu -O3 &&\
+          clang-12 crossing.c -o crossing-x86_32-linux -fuse-ld=lld -target i386-linux-gnu -O3 &&\
+          clang-12 crossing.c -o crossing-aarch64-linux -fuse-ld=lld -target aarch64-linux-gnu -O3 &&\
+          clang-12 crossing.c -o crossing-armv7-linux -fuse-ld=lld -target armv7-linux-gnueabihf -O3 \
           ")"
 
-          sudo mv /chroot-root/crossing/crossing-{x86_64,i386,aarch64,armv7} .
+          sudo mv /chroot-root/crossing/crossing-{x86_64,i686,aarch64,armv7} .
           sudo rm -rf /chroot-root/crossing
       - name: Upload cross-compiled C program
         uses: actions/upload-artifact@v3
         with:
-          name: crossing
+          name: crossing-linux
           path: |
-            crossing-x86_64
-            crossing-i386
-            crossing-aarch64
-            crossing-armv7
+            crossing-x86_64-linux
+            crossing-x86_32-linux
+            crossing-aarch64-linux
+            crossing-armv7-linux
+  build-windows:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v3
+      - name: Cross-compile test C source code
+        run: |
+          sudo apt-get update
+          sudo apt-get install gcc-mingw-w64
+
+          x86_64-w64-mingw32-gcc crossing.c -o crossing-x86_64-windows.exe -O3
+          i686-w64-mingw32-gcc crossing.c -o crossing-x86_32-windows.exe -O3
+      - name: Upload cross-compiled C program
+        uses: actions/upload-artifact@v3
+        with:
+          name: crossing-windows
+          path: |
+            crossing-x86_64-windows.exe
+            crossing-x86_32-windows.exe
