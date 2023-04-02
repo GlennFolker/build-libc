@@ -11,20 +11,20 @@ jobs:
 
           sudo debootstrap --variant=minbase xenial crossing
           sudo chroot crossing /bin/bash -c "$(printf "\
-          apt-get update && apt-get install wget \n\
-          apt-get install \ \n\
-            wget \ \n\
-            software-properties-common \n\
-          \n\
-          wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | apt-key add - \n\
-          apt-add-repository "deb http://apt.llvm.org/xenial/ llvm-toolchain-xenial-12 main" \n\
-          \n\
-          apt-get update \n\
-          apt-get install -y \ \n\
-            clang-12 lld-12 \ \n\
-            libgcc-5-dev lib32gcc-5-dev \ \n\
-            libgcc-5-dev-arm64-cross libgcc-5-dev-armhf-cross \ \n\
-            libc6-dev libc6-dev-i386 \ \n\
-            libc6-dev-arm64-cross libc6-dev-armhf-cross \n\
-          \n\
+          apt-get update &&\
+          apt-get install \
+            wget \
+            software-properties-common &&\
+          \
+          wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | apt-key add - &&\
+          apt-add-repository "deb http://apt.llvm.org/xenial/ llvm-toolchain-xenial-12 main" &&\
+          \
+          apt-get update &&\
+          apt-get install -y \
+            clang-12 lld-12 \
+            libgcc-5-dev lib32gcc-5-dev \
+            libgcc-5-dev-arm64-cross libgcc-5-dev-armhf-cross \
+            libc6-dev libc6-dev-i386 \
+            libc6-dev-arm64-cross libc6-dev-armhf-cross \
+          \
           ")"
