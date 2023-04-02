@@ -6,7 +6,7 @@ jobs:
     steps:
       - name: Cache the `chroot` environment
         id: cache-chroot
-        uses: actions/cache@v3
+        uses: john-shaffer/cache@main
         with:
           path: chroot-root
           key: ${{ runner.os }}-chroot-root-v0
@@ -36,8 +36,6 @@ jobs:
             libc6-dev libc6-dev-i386 \
             libc6-dev-arm64-cross libc6-dev-armhf-cross \
           ")"
-
-          sudo chown -R $(whoami):$(id -ng) chroot-root
       - name: Cross-compile test C source code
         run: |
           sudo chroot chroot-root /bin/bash -c "$(printf "\
@@ -45,7 +43,7 @@ jobs:
           #include <stdio.h> \n\
           \n\
           int main(void) { \n\
-              printf(\"Hello, world!\\\n\"); \n\
+              printf(\"Hello, world.\\\n\"); \n\
               return 0; \n\
           } \n\
           " > crossing.c &&\
