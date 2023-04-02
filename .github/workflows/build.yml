@@ -4,20 +4,27 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Build
+      - name: Cache the `chroot` environment
+        id: cache-chroot
+        uses: actions/cache@v3
+        with:
+          path: chroot-root
+          key: ${{ runner.os }}-chroot-root-v0
+      - name: Bootstrap the `chroot` environment
+        if: steps.cache-chroot.outputs.cache-hit != 'true'
         run: |
           sudo apt-get update
           sudo apt-get -y install debootstrap
 
-          sudo debootstrap --variant=minbase xenial crossing
-          sudo chroot crossing /bin/bash -c "$(printf "\
+          sudo debootstrap --variant=minbase xenial chroot-root
+          sudo chroot chroot-root /bin/bash -c "$(printf "\
           apt-get update &&\
           apt-get install -y \
             wget \
             software-properties-common &&\
           \
           wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | apt-key add - &&\
-          apt-add-repository "deb http://apt.llvm.org/xenial/ llvm-toolchain-xenial-12 main" &&\
+          apt-add-repository \"deb http://apt.llvm.org/xenial/ llvm-toolchain-xenial-12 main\" &&\
           \
           apt-get update &&\
           apt-get install -y \
