@@ -13,6 +13,8 @@ jobs:
       - name: Bootstrap the `chroot` environment
         if: steps.cache-chroot.outputs.cache-hit != 'true'
         run: |
+          sudo rm -rf chroot-root
+
           sudo apt-get update
           sudo apt-get -y install debootstrap
 
