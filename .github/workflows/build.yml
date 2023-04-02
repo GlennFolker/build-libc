@@ -4,22 +4,24 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
+      - name: Clone repository
+        uses: actions/checkout@v3
       - name: Cache the `chroot` environment
         id: cache-chroot
         uses: john-shaffer/cache@main
         with:
-          path: chroot-root
+          path: /chroot-root
           key: ${{ runner.os }}-chroot-root-v0
       - name: Bootstrap the `chroot` environment
         if: steps.cache-chroot.outputs.cache-hit != 'true'
         run: |
-          sudo rm -rf chroot-root
+          sudo rm -rf /chroot-root
 
           sudo apt-get update
           sudo apt-get -y install debootstrap
 
           sudo debootstrap --variant=minbase xenial chroot-root
-          sudo chroot chroot-root /bin/bash -c "$(printf "\
+          sudo chroot /chroot-root /bin/bash -c "$(printf "\
           apt-get update &&\
           apt-get install -y \
             apt-transport-https ca-certificates \
@@ -38,15 +40,13 @@ jobs:
           ")"
       - name: Cross-compile test C source code
         run: |
-          sudo chroot chroot-root /bin/bash -c "$(printf "\
-          printf \"\
-          #include <stdio.h> \n\
-          \n\
-          int main(void) { \n\
-              printf(\"Hello, world.\\\n\"); \n\
-              return 0; \n\
-          } \n\
-          \" > crossing.c &&\
+          cd ..
+          sudo mv crossing /chroot-root
+          sudo mkdir crossing
+          cd crossing
+
+          sudo chroot /chroot-root /bin/bash -c "$(printf "\
+          cd crossing &&\
           \
           clang-12 crossing.c -o crossing-x86_64 -fuse-ld=lld -target x86_64-linux-gnu &&\
           clang-12 crossing.c -o crossing-i386 -fuse-ld=lld -target i386-linux-gnu &&\
@@ -54,7 +54,8 @@ jobs:
           clang-12 crossing.c -o crossing-armv7 -fuse-ld=lld -target armv7-linux-gnueabihf \
           ")"
 
-          sudo cp chroot-root/crossing-{x86_64,i386,aarch64,armv7} .
+          sudo mv /chroot-root/crossing/crossing-{x86_64,i386,aarch64,armv7} .
+          sudo rm -rf /chroot-root/crossing
       - name: Upload cross-compiled C program
         uses: actions/upload-artifact@v3
         with:
