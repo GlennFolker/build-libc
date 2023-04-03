@@ -2,7 +2,31 @@ on: [push]
 
 jobs:
   build-linux:
+    strategy:
+      matrix:
+        arch:
+          - amd64 x86_64-linux-gnu
+          - i386 i386-linux-gnu
+          - arm64 aarch64-linux-gnu
     runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Cache the `chroot` environment
+        uses: john-shaffer/cache@main
+        id: cache-chroot
+        with:
+          path: /chroot-root
+          key: chroot-root-${{ matrix.arch }}-v0
+      - name: Bootstrap the `chroot` environment
+        if: steps.cache-chroot.outputs.cache-hit != 'true'
+        run: |
+          sudo rm -rf /chroot-root
+          pwd
+          echo $HOME
+
+  build-linux-old:
+    runs-on: ubuntu-latest
+    if: false
     steps:
       - name: Clone repository
         uses: actions/checkout@v3
@@ -67,6 +91,7 @@ jobs:
             crossing-armv7-linux
   build-windows:
     runs-on: ubuntu-latest
+    if: false
     steps:
       - name: Clone repository
         uses: actions/checkout@v3
